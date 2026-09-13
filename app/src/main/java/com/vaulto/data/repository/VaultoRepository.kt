@@ -18,6 +18,8 @@ class VaultoRepository(
 
     val favorites = savedItemDao.getFavorites()
 
+    val archivedItems = savedItemDao.getArchivedItems()
+
     suspend fun saveItem(item: SavedItem) {
         savedItemDao.insert(item)
     }
@@ -30,8 +32,18 @@ class VaultoRepository(
         savedItemDao.delete(item)
     }
 
-    fun searchItems(query: String) =
-        savedItemDao.search(query)
+    suspend fun setFavorite(item: SavedItem, isFavorite: Boolean) {
+        savedItemDao.updateFavorite(item.id, isFavorite)
+    }
+
+    suspend fun setArchived(item: SavedItem, isArchived: Boolean) {
+        savedItemDao.updateArchived(item.id, isArchived)
+    }
+
+    fun searchItems(query: String, filter: String) =
+        savedItemDao.search(query, filter)
+
+    fun getItem(id: Long) = savedItemDao.getItem(id)
 
 
     // -------------------------

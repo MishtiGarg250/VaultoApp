@@ -19,6 +19,13 @@ class HomeViewModel(
             emptyList()
         )
 
+    val archivedItems = repository.archivedItems
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
+
     fun toggleFavorite(item: SavedItem) {
 
         viewModelScope.launch {
@@ -48,6 +55,12 @@ class HomeViewModel(
         viewModelScope.launch {
 
             repository.deleteItem(item)
+        }
+    }
+
+    fun restore(item: SavedItem) {
+        viewModelScope.launch {
+            repository.setArchived(item, false)
         }
     }
 }
