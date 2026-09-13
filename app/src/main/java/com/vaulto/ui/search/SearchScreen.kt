@@ -27,6 +27,7 @@ fun SearchScreen(viewModel: SearchViewModel, onBack: () -> Unit, onItemClick: (L
     val filter by viewModel.filter.collectAsStateWithLifecycle()
     val results by viewModel.results.collectAsStateWithLifecycle()
     val recentSearches by viewModel.recentSearches.collectAsStateWithLifecycle()
+    val collections by viewModel.collections.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
@@ -55,7 +56,7 @@ fun SearchScreen(viewModel: SearchViewModel, onBack: () -> Unit, onItemClick: (L
                 else -> LazyColumn(contentPadding = PaddingValues(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     item { Text("${results.size} ${if (results.size == 1) "result" else "results"}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary) }
                     items(results, key = { it.id }) { item ->
-                        SavedItemCard(item, { viewModel.toggleFavorite(item) }, { viewModel.setArchived(item, true) }, { viewModel.delete(item) }, archived = item.isArchived, onRestore = { viewModel.setArchived(item, false) }, onClick = { viewModel.rememberSearch(); focusManager.clearFocus(); onItemClick(item.id) })
+                        SavedItemCard(item, { viewModel.toggleFavorite(item) }, { viewModel.setArchived(item, true) }, { viewModel.delete(item) }, archived = item.isArchived, onRestore = { viewModel.setArchived(item, false) }, collectionName = collections.firstOrNull { it.id == item.collectionId }?.name, onClick = { viewModel.rememberSearch(); focusManager.clearFocus(); onItemClick(item.id) })
                     }
                 }
             }

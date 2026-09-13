@@ -25,6 +25,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vaulto.data.entity.SavedItem
+import java.text.DateFormat
+import java.util.Date
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, onAddClick: () -> Unit, onArchiveClick: () -> Unit, onSearchClick: () -> Unit) {
@@ -99,7 +101,7 @@ fun HomeScreen(viewModel: HomeViewModel, onAddClick: () -> Unit, onArchiveClick:
 }
 
 @Composable
-fun SavedItemCard(item: SavedItem, onFavorite: () -> Unit, onArchive: () -> Unit, onDelete: () -> Unit, archived: Boolean = false, onRestore: (() -> Unit)? = null, onClick: (() -> Unit)? = null) {
+fun SavedItemCard(item: SavedItem, onFavorite: () -> Unit, onArchive: () -> Unit, onDelete: () -> Unit, archived: Boolean = false, onRestore: (() -> Unit)? = null, collectionName: String? = null, onClick: (() -> Unit)? = null) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     Surface(shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.surface, tonalElevation = 1.dp, modifier = Modifier.fillMaxWidth().then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)) {
         Column(Modifier.padding(18.dp)) {
@@ -111,6 +113,10 @@ fun SavedItemCard(item: SavedItem, onFavorite: () -> Unit, onArchive: () -> Unit
                 IconButton(onClick = onFavorite, modifier = Modifier.size(38.dp)) { Icon(if (item.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder, if (item.isFavorite) "Remove from favorites" else "Add to favorites", tint = if (item.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) }
             }
             item.note?.takeIf { it.isNotBlank() }?.let { Text(it, style = MaterialTheme.typography.bodyMedium, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp)) }
+            Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                collectionName?.let { AssistChip(onClick = {}, label = { Text(it) }, border = null, modifier = Modifier.height(28.dp)) }
+                Text(DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(item.createdAt)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
             Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
                 if (archived) TextButton(onClick = { onRestore?.invoke() }) { Text("Restore") }
                 else TextButton(onClick = onArchive) { Icon(Icons.Default.Archive, null, Modifier.size(17.dp)); Spacer(Modifier.width(5.dp)); Text("Archive") }

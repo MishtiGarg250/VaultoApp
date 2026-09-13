@@ -20,6 +20,9 @@ class SearchViewModel(private val repository: VaultoRepository) : ViewModel() {
     private val _recentSearches = MutableStateFlow<List<String>>(emptyList())
     val recentSearches: StateFlow<List<String>> = _recentSearches
 
+    val collections = repository.collections
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     val results = combine(query, filter) { text, selectedFilter ->
         text.trim() to selectedFilter.name
     }.flatMapLatest { (text, selectedFilter) ->
